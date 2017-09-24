@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 
 class Solution {
     //Definition for singly-linked list.
@@ -148,6 +149,10 @@ class Solution {
         return prefix;
     }
 
+    public List<List<Integer>> threeSum(int[] nums)
+    {
+        return null;
+    }
 
     public static void main(String[] args)
     {
@@ -156,4 +161,5 @@ class Solution {
 //        System.out.println(s.longestCommonPrefix(strs));
         System.out.println("abc".indexOf(""));
     }
+
 }
