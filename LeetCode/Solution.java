@@ -92,12 +92,68 @@ class Solution {
         }
         return maxArea;
     }
-    public static void main(String[] args)
+
+    public String longestCommonPrefix_v1(String[] strs)
     {
-        int[] height = {1, 1};
-        Solution s = new Solution();
-        int a = s.maxArea(height);
-        System.out.println(a);
+        // base case
+        if (strs.length == 1) return strs[0];
+        if (strs.length == 0) return "";
+
+        int i = 0;  // common index (exclusive)
+        int minLen = Integer.MAX_VALUE;
+        for (String s: strs)
+        {
+            minLen = java.lang.Math.min(s.length(), minLen);
+        }
+        while (i < minLen)
+        {
+            Character c = null;
+            int cnt = 0;
+            for (String s: strs)
+            {
+                if (cnt == 0)
+                {
+                    c = s.charAt(i);
+                }
+                else
+                {
+                    if (c != s.charAt(i))
+                    {
+                        return s.substring(0, i);
+                    }
+                }
+                cnt += 1;
+            }
+            i += 1;
+        }
+        return strs[0].substring(0, i);
     }
 
+    public String longestCommonPrefix(String[] strs)  // faster version
+    {
+        // base case
+        if (strs == null || strs.length == 0) return "";
+        // idea is as follows: take the first string in the array as cur_prefix
+        // for each other word: chop off the last character of cur_prefix until it becomes the prefix for this word
+        String prefix = strs[0];
+        int idxWord = 1;
+        while (idxWord < strs.length)
+        {
+            while (strs[idxWord].indexOf(prefix) != 0)  // when it's not prefix
+            {
+                prefix = prefix.substring(0, prefix.length() - 1);  // chop off the last char
+            }
+            idxWord++;
+        }
+        return prefix;
+    }
+
+
+    public static void main(String[] args)
+    {
+        Solution s = new Solution();
+        String[] strs = {"a", "ab"};
+//        System.out.println(s.longestCommonPrefix(strs));
+        System.out.println("abc".indexOf(""));
+    }
 }
