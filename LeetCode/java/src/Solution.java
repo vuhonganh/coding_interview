@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 class Solution {
     //Definition for singly-linked list.
@@ -151,7 +150,38 @@ class Solution {
 
     public List<List<Integer>> threeSum(int[] nums)
     {
-        return null;
+        Arrays.sort(nums);  // note that java sorts in-place
+        // for each entry, do 2sum on the rest of the sorted array
+        List<List<Integer>> res = new LinkedList<>();
+        for (int j = 0; j < nums.length - 2; ++j)
+        {
+            if (j == 0 || (j > 0 && nums[j] != nums[j - 1]))
+            {
+                int cur = nums[j];
+                if (cur > 0) break;
+                int lo = j + 1;
+                int hi = nums.length - 1;
+                while (hi > lo)
+                {
+                    int highNum = nums[hi];
+                    int lowNum = nums[lo];
+                    if (highNum + lowNum + cur < 0) lo++;
+                    else if (highNum + lowNum + cur > 0) hi--;
+                    else
+                    {
+                        System.out.println("asdf");
+                        res.add(Arrays.asList(cur, lowNum, highNum));
+                        // THIS IS CRUCIAL: ALWAYS UPDATE BEFORE MOVING ON
+                        lo++;
+                        hi--;
+                        // DONE UPDATING, NOW SKIP DUPLICATES
+                        while (hi > lo && nums[hi] == nums[hi + 1]) hi--;
+                        while (hi > lo && nums[lo] == nums[lo - 1]) lo++;
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     public static void main(String[] args)
@@ -161,6 +191,8 @@ class Solution {
 //        System.out.println(s.longestCommonPrefix(strs));
         System.out.println("abc".indexOf(""));
         System.out.println("hello");
+        int[] test = {-1,0,1,2,-1,-4};
+        System.out.println(s.threeSum(test));
     }
 
 }
