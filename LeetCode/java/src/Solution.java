@@ -160,6 +160,7 @@ class Solution {
         String[] strs = {"a", "ab"};
 //        System.out.println(s.longestCommonPrefix(strs));
         System.out.println("abc".indexOf(""));
+        System.out.println("hello");
     }
 
 }
