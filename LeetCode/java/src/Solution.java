@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 class Solution {
@@ -184,6 +185,49 @@ class Solution {
         return res;
     }
 
+    public int threeSumClosest(int[] nums, int target)
+    {
+        Arrays.sort(nums);
+        int sumClosest = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.length - 2; ++i)  // duplicate is ok since we are finding closest value
+        {
+            for (int j = i + 1; j < nums.length - 1; ++j)
+                {
+                    int toSearch = target - nums[i] - nums[j];
+                    int iC = Arrays.binarySearch(nums, toSearch);  // return idx of the first elem >= toSearch if found
+                    iC = (iC < 0) ? 0 - (iC + 1) : iC;  // when not found, return -(insertion_point + 1)
+//                    System.out.println(toSearch);
+//                    System.out.println(iC);
+                    if (iC < j + 2)  // already cover this or the diff will always increase -> opt was found
+                    {
+                        iC = j + 1;
+                        int curSum = nums[i] + nums[j] + nums[iC];
+                        int curDiff = Math.abs(curSum - target);
+                        int optDiff = Math.abs(sumClosest - target);
+                        sumClosest = (curDiff < optDiff) ? curSum : sumClosest;
+                        // if sumClosest > target, continue only makin it further to the target
+                        if (sumClosest > target) break;
+                    }
+                    else
+                    {
+                        // check current and below one index
+                        if (iC < nums.length)
+                        {
+                            int curSum = nums[i] + nums[j] + nums[iC];
+                            int curDiff = Math.abs(curSum - target);
+                            int optDiff = Math.abs(sumClosest - target);
+                            sumClosest = (curDiff < optDiff) ? curSum : sumClosest;
+                        }
+                        int curSum = nums[i] + nums[j] + nums[iC - 1];
+                        int curDiff = Math.abs(curSum - target);
+                        int optDiff = Math.abs(sumClosest - target);
+                        sumClosest = (curDiff < optDiff) ? curSum : sumClosest;
+                    }
+                }
+        }
+        return sumClosest;
+    }
+
     public static void main(String[] args)
     {
         Solution s = new Solution();
@@ -193,6 +237,9 @@ class Solution {
         System.out.println("hello");
         int[] test = {-1,0,1,2,-1,-4};
         System.out.println(s.threeSum(test));
+        int[] testThreeSumClosest = {-55,-24,-18,-11,-7,-3,4,5,6,9,11,23,33};
+        System.out.println(s.threeSumClosest(testThreeSumClosest, 0));
+
     }
 
 }
