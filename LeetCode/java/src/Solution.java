@@ -228,6 +228,64 @@ class Solution {
         return sumClosest;
     }
 
+
+    public List<List<Integer>> fourSum(int[] nums, int target)
+    {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        int len = nums.length;
+        if (len < 4) return res;
+        for (int i = 0; i < len - 3; ++i)
+        {
+            if (nums[i] + nums[len - 3] + nums[len - 2] + nums[len - 1] < target) continue;
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            for (int j = i + 1; j < len - 2; ++j)
+            {
+                if (nums[i] + nums[j] + nums[len - 2] + nums[len - 1] < target) continue;
+                if (j > i + 1 && nums[j] == nums[j - 1]) continue;
+                int twoFirstSum = nums[i] + nums[j];
+                int idLo = j + 1;
+                int idHi = len - 1;
+                while (idLo < idHi)
+                {
+                    int curSum = twoFirstSum + nums[idLo] + nums[idHi];
+                    if (curSum == target)
+                    {
+                        res.add(Arrays.asList(nums[i], nums[j], nums[idLo], nums[idHi]));
+                        idLo++;
+                        idHi--;
+                        while (idLo < idHi && nums[idLo] == nums[idLo - 1])
+                        {
+                            idLo++;
+                        }
+                        while (idLo < idHi && nums[idHi] == nums[idHi + 1])
+                        {
+                            idHi--;
+                        }
+                    }
+                    else if (curSum < target)
+                    {
+                        idLo++;
+                        while (idLo < idHi && nums[idLo] == nums[idLo - 1])
+                        {
+                            idLo++;
+                        }
+                    }
+                    else
+                    {
+                        idHi--;
+                        while (idLo < idHi && nums[idHi] == nums[idHi + 1])
+                        {
+                            idHi--;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+
     public static void main(String[] args)
     {
         Solution s = new Solution();
