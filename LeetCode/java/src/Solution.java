@@ -320,6 +320,99 @@ class Solution {
         return sumClosest;
     }
 
+    public ListNode removeNthFromEnd(ListNode head, int n)
+    {
+        // remove the nth node from the end of linked list and return its head.
+        // find length
+        int len = 0;
+        ListNode cur = head;
+        ListNode cur2 = head;
+        while (cur != null)
+        {
+            cur = cur.next;
+            len++;
+        }
+        if (len == 1 || n == len) return head.next;
+
+
+        for (int i = 0; i < len - n - 1; ++i)
+        {
+            cur2 = cur2.next;
+        }
+
+        cur2.next = cur2.next.next;
+        return head;
+    }
+
+    public boolean isValid(String s)
+    {
+        if (s.length() % 2 == 1) return false;
+        Stack<Character> q = new Stack<>();
+        for (char c : s.toCharArray())
+        {
+            if (c == '[' || c == '(' || c == '{')
+            {
+                q.push(c);
+            }
+            else
+            {
+                if (q.empty()) return false;
+                switch (c)
+                {
+                    case ')':
+                        if (q.peek() != '(') return false;
+                        break;
+                    case ']':
+                        if (q.peek() != '[') return false;
+                        break;
+                    case '}':
+                        if (q.peek() != '{') return false;
+                        break;
+                    default:
+                        return false;
+                }
+                q.pop();
+            }
+        }
+        return q.empty();
+    }
+
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2)
+    {
+        if (l1 == null && l2 == null) return null;  // deal with base case
+        ListNode res = new ListNode(0);
+        ListNode cursorRes = res;
+        while ((l1 != null) || (l2 != null))
+        {
+            if (l1 != null && l2 != null)
+            {
+                if (l1.val < l2.val)
+                {
+                    cursorRes.val = l1.val;
+                    l1 = l1.next;
+                }
+                else
+                {
+                    cursorRes.val = l2.val;
+                    l2 = l2.next;
+                }
+            }
+            else if (l1 != null)
+            {
+                cursorRes.val = l1.val;
+                l1 = l1.next;
+            }
+            else
+            {
+                cursorRes.val = l2.val;
+                l2 = l2.next;
+            }
+
+            if (l1 != null || l2 != null) cursorRes.next = new ListNode(0);
+            cursorRes = cursorRes.next;
+        }
+        return res;
+    }
 
     public static void main(String[] args)
     {
