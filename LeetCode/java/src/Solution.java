@@ -377,7 +377,7 @@ class Solution {
         return q.empty();
     }
 
-    public ListNode mergeTwoLists(ListNode l1, ListNode l2)
+    public ListNode mergeTwoLists_v1(ListNode l1, ListNode l2)  // can be done faster by pointing directly rather than updating val
     {
         if (l1 == null && l2 == null) return null;  // deal with base case
         ListNode res = new ListNode(0);
@@ -412,6 +412,35 @@ class Solution {
             cursorRes = cursorRes.next;
         }
         return res;
+    }
+
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2)  // faster version
+    {
+        ListNode res = new ListNode(0);
+        ListNode cursorRes = res;
+        while (l1 != null && l2 != null)
+        {
+            if (l1.val < l2.val)
+            {
+                cursorRes.next = l1;
+                l1 = l1.next;
+            }
+            else
+            {
+                cursorRes.next = l2;
+                l2 = l2.next;
+            }
+            cursorRes = cursorRes.next;
+        }
+        if (l1 != null)
+        {
+            cursorRes.next = l1;
+        }
+        else
+        {
+            cursorRes.next = l2;
+        }
+        return res.next;
     }
 
     public static void main(String[] args)
