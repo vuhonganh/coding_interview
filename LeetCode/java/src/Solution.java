@@ -1,3 +1,4 @@
+import javax.xml.stream.FactoryConfigurationError;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -443,6 +444,207 @@ class Solution {
         return res.next;
     }
 
+    public ListNode swapPairs(ListNode head)
+    {
+        if (head == null) return head;
+        ListNode dummyHead = new ListNode(0);
+        dummyHead.next = head;
+        ListNode cursor = dummyHead;
+        while (swapPairOne(cursor))
+        {
+            cursor = cursor.next.next;
+        }
+        return dummyHead.next;
+    }
+
+    public boolean swapPairOne(ListNode cursorHead)
+    {
+        // assume we want to swap b and c (cursorHead can be dummyHead and d can be null)
+        // cursorHead -> b -> c -> d
+        // cursorHead -> c -> b -> d
+        try
+        {
+            ListNode b = cursorHead.next;
+            ListNode c = cursorHead.next.next;
+            ListNode d = cursorHead.next.next.next;
+            cursorHead.next = c;
+            b.next = d;
+            c.next = b;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public ListNode reverseKGroup(ListNode head, int k)
+    {
+        if (head == null || k == 0) return head;
+        ListNode dummyHead = new ListNode(0);
+        ListNode cursor = dummyHead;
+        ListNode lastTail = dummyHead;
+        dummyHead.next = head;
+        cursor = cursor.next;  // make cursor be inside the real list
+        while (true)
+        {
+            ListNode[] toReverse = new ListNode[k];
+            // TODO cursor updating is currently wrong
+            for (int i = 0; i < k; ++i)
+            {
+                if (cursor == null) return dummyHead.next;
+                toReverse[i] = cursor;  // add current elem
+                cursor = cursor.next;  // cursor move to next one
+            }
+            ListNode[] headAndTail = reverseOneGroup(toReverse);
+
+            ListNode headOfGroup = headAndTail[0];
+            ListNode tailOfGroup = headAndTail[1];
+            tailOfGroup.next = cursor;  // cursor is on the next group already
+            lastTail.next = headOfGroup; // tail from the previous group has to be linked to head of this group
+            lastTail = tailOfGroup;  // update lastTail to this tail of group
+        }
+    }
+
+    public ListNode[] reverseOneGroup(ListNode[] headGroup)
+    {
+        ListNode newHeadOfGroup = headGroup[headGroup.length - 1];
+        ListNode newTailOfGroup = headGroup[0];
+        for (int i = headGroup.length - 1; i > 0; --i)
+        {
+            headGroup[i].next = headGroup[i - 1];
+        }
+        return new ListNode[]{newHeadOfGroup, newTailOfGroup};
+    }
+
+    public int removeDuplicates(int[] nums)
+    {
+        // nums is sorted but it can contain duplicates
+        // remove duplicates in place (by modifing nums)
+        // and return number of distinct numbers in nums
+        if (nums == null || nums.length == 0) return 0;
+
+        int cnt = 1;
+        int iLast = 0;
+        for (int i = 1; i < nums.length; ++i)
+        {
+            if (nums[i] != nums[i - 1])
+            {
+                cnt++;
+                nums[iLast + 1] = nums[i];
+                iLast++;
+            }
+        }
+        return cnt;
+    }
+
+    public int removeElement_v1(int[] nums, int val)  // correct but seem complicated
+    {
+        // Given an array and a value, remove all instances of that value in place and return the new length.
+        // Do not allocate extra space for another array, you must do this in place with constant memory.
+        // The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+
+        // my thinking: swap all the value val to the right-side of the array while it's possible
+        // to do that, keep a lowIdx and highIdx that runs from both side
+        int highIdx = nums.length - 1;
+        int lowIdx = 0;
+        int newLen = 0;
+        while (lowIdx <= highIdx)
+        {
+            while (lowIdx <= highIdx && nums[highIdx] == val)
+            {
+                highIdx--;
+            }
+            // now nums[highIdx] != val
+            if (nums[lowIdx] != val)
+            {
+                newLen++;
+                lowIdx++;
+            }
+            else  // now nums[lowIdx] == val  -> swap
+            {
+                if (lowIdx < highIdx)  // can only swap if lowIdx < highIdx
+                {
+                    // swap
+                    nums[lowIdx] = nums[highIdx];
+                    nums[highIdx] = val;
+                    lowIdx++;
+                    newLen++;
+                }
+
+            }
+        }
+        return newLen;
+    }
+
+    public int removeElement(int[] nums, int val)  // faster and more concise version
+    {
+        int effectiveLen = nums.length;
+        int curIdx = 0;
+        while (curIdx < effectiveLen)
+        {
+            if (nums[curIdx] == val)
+            {
+                nums[curIdx] = nums[effectiveLen - 1];  // exclude nums[curIdx] by replacing it by the right-end elem
+                effectiveLen--;  // update effective length
+            }
+            else
+            {
+                curIdx++;
+            }
+        }
+        return effectiveLen;
+    }
+
+    public int strStr(String haystack, String needle)
+    {
+        // Returns the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+        for (int i = 0; i < haystack.length() - needle.length() + 1; ++i)
+        {
+            boolean matchWhole = true;
+            for (int j = 0; j < needle.length(); ++j)
+            {
+                if (needle.charAt(j) != haystack.charAt(i + j))
+                {
+                    matchWhole = false;
+                    break;
+                }
+            }
+            if (matchWhole) return i;
+        }
+        return -1;
+    }
+
+    public int divide(int dividend, int divisor)
+    {
+        // using bit manipulation
+        // overflow when divisor == 0 (divide by 0)
+        // or divident = INT_MIN and divisor = -1 since abs(INT_MIN) = INT_MAX + 1
+        if (divisor == 0 || (dividend == Integer.MIN_VALUE && divisor == -1)) return Integer.MAX_VALUE;
+        if (dividend == 0) return 0;
+
+        int shift_left;
+        int res = 0;
+        int sign = ((dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0)) ? 1 : -1;
+        long dividend_l = Math.abs((long) dividend);
+        long divisor_l = Math.abs((long) divisor);
+
+        while (dividend_l >= divisor_l)
+        {
+            shift_left = 0;
+            // max left shift for positive int is 16
+            while ((divisor_l << shift_left) <= dividend_l && shift_left < 17) shift_left++;
+            res += 1 << (shift_left - 1);
+            dividend_l -= divisor_l << (shift_left - 1);
+        }
+        return res * sign;
+    }
+
+    public void nextPermutation(int[] nums)
+    {
+
+    }
+
     public static void main(String[] args)
     {
         Solution s = new Solution();
@@ -454,7 +656,7 @@ class Solution {
         System.out.println(s.threeSum(test));
         int[] testThreeSumClosest = {43,75,-90,47,-49,72,17,-31,-68,-22,-21,-30,65,88,-75,23,97,-61,53,87,-3,33,20,51,-79,43,80,-9,34,-89,-7,93,43,55,-94,29,-32,-49,25,72,-6,35,53,63,6,-62,-96,-83,-73,66,-11,96,-90,-27,78,-51,79,35,-63,85,-82,-15,100,-82,1,-4,-41,-21,11,12,12,72,-82,-22,37,47,-18,61,60,55,22,-6,26,-60,-42,-92,68,45,-1,-26,5,-56,-1,73,92,-55,-20,-43,-56,-15,7,52,35,-90,63,41,-55,-58,46,-84,-92,17,-66,-23,96,-19,-44,77,67,-47,-48,99,51,-25,19,0,-13,-88,-10,-67,14,7,89,-69,-83,86,-70,-66,-38,-50,66,0,-67,-91,-65,83,42,70,-6,52,-21,-86,-87,-44,8,49,-76,86,-3,87,-32,81,-58,37,-55,19,-26,66,-89,-70,-69,37,0,19,-65,38,7,3,1,-96,96,-65,-52,66,5,-3,-87,-16,-96,57,-74,91,46,-79,0,-69,55,49,-96,80,83,73,56,22,58,-44,-40,-45,95,99,-97,-22,-33,-92,-51,62,20,70,90};
         System.out.println(s.threeSumClosest(testThreeSumClosest, 284));
-
+        System.out.println(s.divide(-2147483648, 1));
     }
 
 }
